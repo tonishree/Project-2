@@ -204,7 +204,7 @@ void QuickSort(short** &a, int l, int r)
 		QuickSort(a, i, r);
 }
 
-void ShellSort(short** &arr, int n)
+void ShellSort(short** arr, int n)
 {
 	// Bắt đầu với khoảng cách lớn, sau đó rút khoảng cách lại
 	for (int gap = n / 2; gap > 0; gap /= 2)
@@ -290,7 +290,7 @@ void Merge(short** &arr, int l, int m, int r)
 
 /* l is for left index and r is right index of the
 sub-array of arr to be sorted */
-void MergeSort(short** &arr, int l, int r)
+void MergeSort(short** arr, int l, int r)
 {
 	if (l < r)
 	{
@@ -350,6 +350,126 @@ void HeapSort(short** arr, int n)
 	}
 }
 
+short GetMax(short** a, int N)
+{
+	short mx = a[0][1];
+	for (int i = 1; i < N; i++)
+	{
+		if (a[i][1] > mx)
+			mx = a[i][1];
+	}
+	return mx;
+}
+
+void Count(short** a, int N, int &pos, int &neg)
+{
+	for (int i = 0; i < N; i++)
+	{
+		if (a[i][0] == 1) pos++;
+		else neg++;
+	}
+}
+
+void createSubArray(short** a, int N, short** pos, short** neg)
+{
+	int m = 0, n = 0;
+	for (int i = 0; i < N; i++)
+	{
+		if (a[i][0] == 1)
+		{
+			pos[m] = new short[a[i][1] + 2];
+			for (int j = 0; j < a[i][1] + 2; j++)
+			{
+				pos[m][j] = a[i][j];
+			}
+			m++;
+		}
+		else
+		{
+			neg[n] = new short[a[i][1] + 2];
+			for (int j = 0; j < a[i][1] + 2; j++)
+			{
+				neg[n][j] = a[i][j];
+			}
+			n++;
+		}
+	}
+}
+
+void CountSort(short** &a, int N, short exp)
+{
+	short** output = (short**)malloc(sizeof(short*)*N);
+	short n, m;
+	int i, count[10] = { 0 };
+	for (i = 0; i < N; i++)
+	{
+		n = a[i][1];
+		if (n + exp < 2) count[0]++;
+		else
+		{
+			m = a[i][n + exp];
+			count[m]++;
+		}
+	}
+
+	for (i = 1; i < 10; i++)
+		count[i] += count[i - 1];
+
+	for (i = N - 1; i >= 0; i--)
+	{
+		n = a[i][1];
+		if (n + exp < 2)
+		{
+			output[count[0] - 1] = a[i];
+			count[0]--;
+		}
+
+		else{
+			m = a[i][n + exp];
+			output[count[m] - 1] = a[i];
+			count[m]--;
+		}
+	}
+
+	for (i = 0; i < N; i++)
+		a[i] = output[i];
+	free(output);
+}
+
+void Linking(short** a, short** pos, short** neg, int m, int n)
+{
+	int k = 0;
+	for (int i = m - 1; i >= 0; i--)
+	{
+		a[k] = neg[i];
+		k++;
+	}
+	for (int j = 0; j < n; j++)
+	{
+		a[k]=pos[j];
+		k++;
+	}
+}
+
+void RadixSort(short** a, int N)
+{
+	int pos, neg;
+	pos = neg = 0;
+	Count(a, N, pos, neg);
+	short**L = (short**)malloc(sizeof(short*)*neg);
+	short**R = (short**)malloc(sizeof(short*)*pos);
+	createSubArray(a, N, R, L);
+	short m = GetMax(L, neg);
+	short n = GetMax(R, pos);
+	for (short exp1 = 1; m + exp1 >= 2; exp1--)
+		CountSort(L, neg, exp1);
+	for (short exp2 = 1; n + exp2 >= 2; exp2--)
+		CountSort(R, pos, exp2);
+	Linking(a, R, L, neg, pos);
+	free(L);
+	free(R);
+}
+
 void main()
 {
 	srand(time(NULL));
@@ -363,7 +483,8 @@ void main()
 	//QuickSort(a, 0, N - 1);
 	//ShellSort(a, N);
 	//MergeSort(a, 0, N - 1);
-	HeapSort(a, N);
+	//HeapSort(a, N);
+	RadixSort(a, N);
 	clock_t end = clock();
 	float sec = (float)(end - begin) / CLOCKS_PER_SEC;
 	//printArray(a, N);
