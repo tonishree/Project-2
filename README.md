@@ -10,6 +10,6 @@ Bài nộp: Là 1 file [MSSV].zip chứa 2 phần:
    - Report.docx: Báo cáo kết quả các lần chạy, lập biểu đồ, so sánh và đánh giá.
 
 
-- For study purpose
-- Do not re-up
+# - For study purpose
+# - Do not re-up
 # Thank you !
