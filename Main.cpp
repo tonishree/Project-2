@@ -3,7 +3,7 @@
 #include <time.h>
 #include <Windows.h>
 #include <conio.h>
-#define MAX_LENGTH 23 //Độ dài của số
+#define MAX_LENGTH 19 //Độ dài của số
 
 void Normalize(short* &a) //Hàm chuẩn hóa các số nguyên "lớn" (xóa cái số 0 ở đầu mảng)
 {
@@ -171,7 +171,7 @@ void BubbleSort(short** &a, int N,unsigned long long &giving, unsigned long long
 		if (Larger(a[j - 1], a[j]))
 		{
 			swap(a[j - 1], a[j]);
-			giving += 3;
+			giving ++;
 		}
 	}
 }
@@ -186,7 +186,7 @@ void ShakeSort(short** &a, int N,unsigned long long &giving,unsigned long long &
 			if (Larger(a[j - 1], a[j]))
 			{
 				swap(a[j], a[j - 1]);
-				giving += 3;
+				giving ++;
 				k = j;
 			}
 		}
@@ -196,7 +196,7 @@ void ShakeSort(short** &a, int N,unsigned long long &giving,unsigned long long &
 			if (Larger(a[j - 1], a[j]))
 			{
 				swap(a[j], a[j - 1]);
-				giving += 3;
+				giving ++;
 				k = j;
 			}
 		}
@@ -218,7 +218,7 @@ void QuickSort(short** &a, int l, int r,unsigned long long &giving,unsigned long
 		}
 		if (i <= j){
 			swap(a[i], a[j]);
-			i++; j--; giving += 3;
+			i++; j--; giving ++;
 		}
 	} while (i < j);
 	if (l < j)
@@ -355,7 +355,7 @@ void Heapify(short** arr, int n, int i, unsigned long long &giving, unsigned lon
 	if (largest != i)
 	{
 		swap(arr[i], arr[largest]);
-		giving += 3;
+		giving ++;
 
 		Heapify(arr, n, largest,giving,compare);
 	}
@@ -373,7 +373,7 @@ void HeapSort(short** arr, int n, unsigned long long &giving, unsigned long long
 	{
 		// Move current root to end
 		swap(arr[0], arr[i]);
-		giving += 3;
+		giving ++;
 		// call max heapify on the reduced heap
 		Heapify(arr, i, 0,giving,compare);
 	}
@@ -668,7 +668,7 @@ void main()
 	truePrint(a, N);
 	float sec = (float)(end - begin) / CLOCKS_PER_SEC;
 	printf("Time run: %0.14f sec\n", sec);
-	printf("So phep gan: %ld\n", giving);
-	printf("So phep so sanh: %ld\n", compare);
+	printf("So phep gan: %ul\n", giving);
+	printf("So phep so sanh: %ul\n", compare);
 	free(a);
 }

@@ -1,226 +1,296 @@
-#include <iostream>
-#include <cstdlib>
-#include <ctime>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <Windows.h>
+#include <conio.h>
 
-using namespace std;
-
-typedef struct node* refnode; //Con trỏ đến cấu trúc Node
-
-struct node //Một nút trong danh sách liên kết kép
+unsigned int RandomNum() //Hàm phát sinh ngẫu nhiên 1 số nguyên "lớn"
 {
-	short *a; //Mảng số tượng trưng cho số cực lớn
-	int N; //Số chữ số của số
-	refnode pre; //Con trỏ đến nút trước đó
-	refnode next; //Con trỏ đến nút tiếp theo
-};
-
-struct list //Danh sách liên kết kép
-{
-	refnode head; //Con trỏ đến nút đầu
-	refnode tail; //Con trỏ đến nút cuối
-};
-
-void createList(list &l) //Khởi tạo danh sách rỗng
-{
-	l.head = l.tail = NULL;
+	unsigned int n = rand(); //Độ dài số từ 1 - MAX_LENGTH đơn vị
+	return n;
 }
 
-short* delete0InTheHeadOfNumber(short *&a, int &N) //Xóa các số 0 ở đằng trước
+void RandomArray(unsigned int* &a, int N) //Hàm phát sinh mảng số nguyên "lớn"
 {
-	int dem = 0;
-	for (int i = 1; i <= N; i++)
+	a = (unsigned int*)malloc(sizeof(unsigned int)*N);
+	for (int i = 0; i < N; i++)
 	{
-		if (a[i] == 0)
+		*(a + i) = RandomNum();
+	}
+}
+
+void printArray(unsigned int* a, int N) //Hàm in mảng số nguyên (mỗi phần tử cách nhau 1 khoảng trắng "_")
+{
+	int M;
+	for (int i = 0; i < N; i++)
+	{
+		printf("%d ", a[i]);
+	}
+	printf("\n");
+}
+
+void InsertionSort(unsigned int* &a, int N, unsigned long long &Giving, unsigned long long &Compare)
+{
+	int j;
+	int x;
+	for (int i = 0; i < N; i++)
+	{
+		x = a[i];
+		j = i - 1;
+		Compare++;
+		while ((j >= 0) && (a[j]> x))
 		{
-			dem++;
+			a[j + 1] = a[j];
+			Giving++;
+			j--;
 		}
-		else break;
+		a[j + 1] = x;
+		Giving++;
 	}
-	N -= dem;
-	if (dem == 0)
+}
+
+void swap(unsigned int &a, unsigned int &b)
+{
+	unsigned int temp = a;
+	a = b;
+	b = temp;
+}
+
+void BubbleSort(unsigned int* &a, int N, unsigned long long &giving, unsigned long long &compare)
+{
+	for (int i = 1; i < N; i++)
+	for (int j = N - 1; j >= i; j--)
 	{
-		return a;
-	}
-	else
-	{
-		short* b = new short[N + 1];
-		b[0] = a[0];
-		for (int i = 1; i <= N; i++)
+		compare++;
+		if (a[j - 1]> a[j])
 		{
-			b[i] = a[i + dem];
+			swap(a[j - 1], a[j]);
+			giving++;
 		}
-		delete[]a;
-		return b;
 	}
 }
 
-refnode createNode() //Tạo một node có giá trị bất kì
+void ShakeSort(unsigned int* &a, int N, unsigned long long &giving, unsigned long long &compare)
 {
-	refnode q = new node;
-	if (q)
+	int left = 1, right = N - 1, j, k;
+	do
 	{
-		q->a = NULL;
-		q->N = 1 + rand() % 19; //Số lượng phần tử có thể từ 1 đến 19
-		q->a = new short[q->N + 1];
-		*(q->a) = rand() % 2; //Quy ước 1 là dương, 0 là âm
-		for (int i = 1; i <= q->N; i++)
-		{
-			*(q->a + i) = rand() % 10; //Ngẫu nhiên số từ 0 đến 9
-		}
-		q->a = delete0InTheHeadOfNumber(q->a, q->N);
-		q->next = q->pre = NULL;
-		return q;
-	}
-	else
-	{
-		cout << "Loi cap phat!" << endl; //Lỗi cấp phát bộ nhớ
-		exit(0); //Thoát chương trình
-	}
-}
-
-void addTail(list &l, refnode &q) //Thêm node vào cuối
-{
-	if (l.head) //Danh sách không rỗng
-	{
-		q->pre = l.tail;
-		l.tail->next = q;
-		l.tail = q;
-	}
-	else //Danh sách rỗng
-	{
-		l.head = l.tail = q;
-	}
-}
-
-void createRandomListWithNNode(list &l, int n) //Tạo danh sách ngẫu nhiên N số nguyên
-{
-	for (int i = 0; i < n; i++)
-	{
-		refnode q = createNode();
-		addTail(l, q);
-	}
-}
-
-void printList(list l) //In danh sách
-{
-	while (l.head)
-	{
-		if (l.head->N != 0)
-		{
-			if (*(l.head->a))
+		for (j = right; j >= left; j--){
+			compare++;
+			if (a[j - 1]> a[j])
 			{
-				for (int i = 1; i <= l.head->N; i++)
-				{
-					cout << *(l.head->a + i);
-				}
+				swap(a[j], a[j - 1]);
+				giving++;
+				k = j;
 			}
-			else
+		}
+		left = k + 1;
+		for (j = left; j <= right; j++){
+			compare++;
+			if (a[j - 1]> a[j])
 			{
-				cout << "-";
-				for (int i = 1; i <= l.head->N; i++)
-				{
-					cout << *(l.head->a + i);
-				}
+				swap(a[j], a[j - 1]);
+				giving++;
+				k = j;
 			}
-			cout << " ";
-			l.head = l.head->next;
+		}
+		right = k - 1;
+	} while (left <= right);
+}
+
+void QuickSort(unsigned int* &a, int l, int r, unsigned long long &giving, unsigned long long &compare)
+{
+	int i = l; int j = r; unsigned int x = a[(l + r) / 2];
+	do {
+		compare++;
+		while (x > a[i]) {
+			compare++; i++;
+		}
+		compare++;
+		while (a[j] > x) {
+			compare++; j--;
+		}
+		if (i <= j){
+			swap(a[i], a[j]);
+			i++; j--; giving++;
+		}
+	} while (i < j);
+	if (l < j)
+		QuickSort(a, l, j, giving, compare);
+	if (i < r)
+		QuickSort(a, i, r, giving, compare);
+}
+
+void ShellSort(unsigned int* arr, int n, unsigned long long &giving, unsigned long long &compare)
+{
+	// Bắt đầu với khoảng cách lớn, sau đó rút khoảng cách lại
+	for (int gap = n / 2; gap > 0; gap /= 2)
+	{
+		// Xét mảng với khoảng cách gap hiện tại.
+
+		for (int i = gap; i < n; i += 1)
+		{
+
+			unsigned int temp = arr[i];
+			giving++;
+
+			int j;
+			compare++;
+			for (j = i; j >= gap && arr[j - gap]> temp; j -= gap)
+			{
+				arr[j] = arr[j - gap];
+				giving++;
+				compare++;
+			}
+
+			arr[j] = temp;
+			giving++;
+		}
+	}
+}
+
+// Merge 2 mảng con của a.
+// Mảng con đầu tiên là a[l..m]
+// Mảng thứ hai là a[m+1..r]
+void Merge(unsigned int* &arr, int l, int m, int r, unsigned long long &giving, unsigned long long &compare)
+{
+	int i, j, k;
+	int n1 = m - l + 1;
+	int n2 = r - m;
+
+	/* Tạo các mảng tạm thời */
+	unsigned int* L = (unsigned int*)malloc(sizeof(unsigned int)*(n1));
+	unsigned int* R = new unsigned int[n2];
+
+	/* Gán giá trị cho các mảng L, R */
+	for (i = 0; i < n1; i++)
+	{
+		L[i] = arr[l + i];
+		giving++;
+	}
+	for (j = 0; j < n2; j++)
+	{
+		R[j] = arr[m + 1 + j];
+		giving++;
+	}
+
+	/* Hợp nhất các mảng tạm thời thành mảng a*/
+	i = 0;
+	j = 0;
+	k = l;
+	while (i < n1 && j < n2)
+	{
+		compare++;
+		if (R[j]>L[i])
+		{
+			arr[k] = L[i];
+			giving++;
+			i++;
 		}
 		else
 		{
-			cout << "0 ";
-			l.head = l.head->next;
+			arr[k] = R[j];
+			giving++;
+			j++;
 		}
+		k++;
 	}
-	cout << endl;
+
+	/* Copy các phần tử còn lại của L, nếu còn */
+	while (i < n1)
+	{
+		arr[k] = L[i];
+		giving++;
+		i++;
+		k++;
+	}
+
+	/* Copy các phần tử còn lại của R, nếu còn */
+	while (j < n2)
+	{
+		arr[k] = R[j];
+		giving++;
+		j++;
+		k++;
+	}
 }
 
-void deleteList(list &l) //Xóa danh sách theo kiểu xóa đầu
+void MergeSort(unsigned int* arr, int l, int r, unsigned long long &giving, unsigned long long &compare)
 {
-	while (l.head)
+	if (l < r)
 	{
-		if (l.head == l.tail)
-		{
-			delete[] l.head->a;
-			delete l.head;
-			l.head = l.tail = NULL;
-		}
-		else
-		{
-			refnode q = l.head;
-			l.head->next->pre = NULL;
-			l.head = l.head->next;
-			delete[] q->a;
-			delete q;
-		}
+
+		int m = l + (r - l) / 2;
+
+		MergeSort(arr, l, m, giving, compare);
+		MergeSort(arr, m + 1, r, giving, compare);
+
+		Merge(arr, l, m, r, giving, compare);
 	}
 }
 
-/*void main()
+void Heapify(unsigned int* arr, int n, int i, unsigned long long &giving, unsigned long long &compare)
 {
-	srand(time(NULL)); //Lần chạy sau tạo danh sách ngẫu nhiên không giống như lần chạy trước
-	int N;
-	cout << "Nhap so N: ";
-	cin >> N;
-	while (N < 1)
-	{
-		cout << "N khong duoc nho hon 1: ";
-		cin >> N;
-	}
-	list l;
-	createList(l);
-	createRandomListWithNNode(l, N);
-	printList(l);
-	deleteList(l);
-}*/
+	int largest = i;  // Initialize largest as root
+	int l = 2 * i + 1;  // left = 2*i + 1
+	int r = 2 * i + 2;  // right = 2*i + 2
 
-/*void ShellSort(short** &a, int n, int h[], int k)    // chọn được các k  khoảng cách sắp xếp 
-{                                  //các khoảng cách nằm trong mảng h
-	for (int i = 0; i < k; i++) //duyệt qua các bước sắp xếp
-	for (int j = h[i]; j < n; j++) //xét mảng từ vị trí h[i] 
-	{
-		short* x = a[j]; //lưu phần tử đang xét để tránh ghi đè
-		int l = j - h[i];
-		while (l >= 0 && Larger(a[l], x)) //tìm vị trí thích hợp đồng thời 	                               {    //dời chỗ mảng về bên phải để chừa chỗ cho a[i]       
-		{
-			a[l + h[i]] = a[l];
-			l = l - h[i];
-		}
-		a[l + h[i]] = x; //gán a[i] vào vị trí thích hợp tìm được
-	}
-}*/
+	// If left child is larger than root
+	compare++;
+	if (l < n && arr[l]> arr[largest])
+		largest = l;
 
-short GetMax(short** a, int N)
+	// If right child is larger than largest so far
+	compare++;
+	if (r < n && arr[r]> arr[largest])
+		largest = r;
+
+	// If largest is not root
+	if (largest != i)
+	{
+		swap(arr[i], arr[largest]);
+		giving++;
+
+		Heapify(arr, n, largest, giving, compare);
+	}
+}
+
+// main function to do heap sort
+void HeapSort(unsigned int* arr, int n, unsigned long long &giving, unsigned long long &compare)
 {
-	short mx = a[0][1];
+	// Build heap (rearrange array)
+	for (int i = n / 2 - 1; i >= 0; i--)
+		Heapify(arr, n, i, giving, compare);
+
+	// One by one extract an element from heap
+	for (int i = n - 1; i >= 0; i--)
+	{
+		// Move current root to end
+		swap(arr[0], arr[i]);
+		giving++;
+		// call max heapify on the reduced heap
+		Heapify(arr, i, 0, giving, compare);
+	}
+}
+
+unsigned int GetMax(unsigned int* a, int N)
+{
+	unsigned int mx = a[0];
 	for (int i = 1; i < N; i++)
 	{
-		if (a[i][1]>mx)
-			mx = a[i][1];
+		if (a[i] > mx)
+			mx = a[i];
 	}
 	return mx;
 }
 
-// A utility function to get maximum value in arr[]
-int getMax(int arr[], int n)
+void CountSort(unsigned int* &a, int N, short exp, unsigned long long &giving, unsigned long long &compare)
 {
-	int mx = arr[0];
-	for (int i = 1; i < n; i++)
-	if (arr[i] > mx && )
-		mx = arr[i];
-	return mx;
-}
-
-void CountSort(short** a, int N, short exp)
-{
-	short** output = new short*[N];
-	short n;
+	unsigned int* output = (unsigned int*)malloc(sizeof(unsigned int)*N);
 	int i, count[10] = { 0 };
 	for (i = 0; i < N; i++)
 	{
-		n = a[i][1];
-		if (n + exp < 2) count[0]++;
-		else
-		count[a[i][n + exp]]++;
+		count[(a[i]/exp)%10]++;
 	}
 
 	for (i = 1; i < 10; i++)
@@ -228,59 +298,189 @@ void CountSort(short** a, int N, short exp)
 
 	for (i = N - 1; i >= 0; i--)
 	{
-		output[count[a[i][n + exp]] - 1] = a[i];
-		count[a[i][n + exp]]--;
+			output[count[(a[i]/exp)%10] - 1] = a[i];
+			count[(a[i] / exp) % 10]--;
+			giving++;
 	}
-	for (i = 0; i < n; i++)
+
+	for (i = 0; i < N; i++){
 		a[i] = output[i];
-}
-
-// A function to do counting sort of arr[] according to
-// the digit represented by exp.
-void countSort(int arr[], int n, int exp)
-{
-	int output[n]; // output array
-	int i, count[10] = { 0 };
-
-	// Store count of occurrences in count[]
-	for (i = 0; i < n; i++)
-		count[(arr[i] / exp) % 10]++;
-
-	// Change count[i] so that count[i] now contains actual
-	//  position of this digit in output[]
-	for (i = 1; i < 10; i++)
-		count[i] += count[i - 1];
-
-	// Build the output array
-	for (i = n - 1; i >= 0; i--)
-	{
-		output[count[(arr[i] / exp) % 10] - 1] = arr[i];
-		count[(arr[i] / exp) % 10]--;
+		giving++;
 	}
-
-	// Copy the output array to arr[], so that arr[] now
-	// contains sorted numbers according to current digit
-	for (i = 0; i < n; i++)
-		arr[i] = output[i];
+	free(output);
 }
 
-// The main function to that sorts arr[] of size n using 
-// Radix Sort
-void radixsort(int arr[], int n)
+void RadixSort(unsigned int* a, int N, unsigned long long &giving, unsigned long long &compare)
 {
-	// Find the maximum number to know number of digits
-	int m = getMax(arr, n);
-
-	// Do counting sort for every digit. Note that instead
-	// of passing digit number, exp is passed. exp is 10^i
-	// where i is current digit number
-	for (int exp = 1; m / exp > 0; exp *= 10)
-		countSort(arr, n, exp);
+	int m = GetMax(a, N);
+	for (int exp = 1; (m / exp)>0; exp *= 10)
+		CountSort(a, N, exp, giving, compare);
 }
 
-void RadixSort(short** a, int N)
+void chooseN(int &N){
+	int temp;
+	printf("Chon so luong phan tu N\n");
+	printf("1.N=100\n");
+	printf("2.N=1000\n");
+	printf("3.N=10000\n");
+	printf("4.N=100000\n");
+	printf("5.N=1000000\n");
+	while (1)
+	{
+		temp = toupper(_getch());
+		if (temp == '1')
+		{
+			N = 100;
+			system("cls");
+			break;
+		}
+		else if (temp == '2')
+		{
+			N = 1000;
+			system("cls");
+			break;
+		}
+		else if (temp == '3')
+		{
+			N = 10000;
+			system("cls");
+			break;
+		}
+		else if (temp == '4')
+		{
+			N = 100000;
+			system("cls");
+			break;
+		}
+		else if (temp == '5')
+		{
+			N = 1000000;
+			system("cls");
+			break;
+		}
+	}
+}
+
+void chooseSort(unsigned int* a, int N, unsigned long long &giving, unsigned long long &compare, clock_t &begin, clock_t &end)
 {
-	short m = GetMax(a, N);
-	for (short exp = 1; m + exp >= 2; exp--)
-		CountSort(a, N, exp);
+	int temp;
+	printf("Thuat toan ap dung de sap xep: %d PHAN TU\n", N);
+	printf("1.Insertion Sort\n");
+	printf("2.Bubble Sort\n");
+	printf("3.Shake Sort\n");
+	printf("4.Quick Sort\n");
+	printf("5.Shell Sort\n");
+	printf("6.Merge Sort\n");
+	printf("7.Heap Sort\n");
+	printf("8.Radix Sort\n");
+	while (1)
+	{
+		temp = toupper(_getch());
+		if (temp == '1')
+		{
+			system("cls");
+			begin = clock();
+			InsertionSort(a, N, giving, compare);
+			end = clock();
+			break;
+		}
+		else if (temp == '2')
+		{
+			system("cls");
+			begin = clock();
+			BubbleSort(a, N, giving, compare);
+			end = clock();
+			break;
+		}
+		else if (temp == '3')
+		{
+			system("cls");
+			begin = clock();
+			ShakeSort(a, N, giving, compare);
+			end = clock();
+			break;
+		}
+		else if (temp == '4')
+		{
+			system("cls");
+			begin = clock();
+			QuickSort(a, 0, N - 1, giving, compare);
+			end = clock();
+			break;
+		}
+		else if (temp == '5')
+		{
+			system("cls");
+			begin = clock();
+			ShellSort(a, N, giving, compare);
+			end = clock();
+			break;
+		}
+		else if (temp == '6')
+		{
+			system("cls");
+			begin = clock();
+			MergeSort(a, 0, N - 1, giving, compare);
+			end = clock();
+			break;
+		}
+		else if (temp == '7')
+		{
+			system("cls");
+			begin = clock();
+			HeapSort(a, N, giving, compare);
+			end = clock();
+			break;
+		}
+		else if (temp == '8')
+		{
+			system("cls");
+			begin = clock();
+			RadixSort(a, N, giving, compare);
+			end = clock();
+			break;
+		}
+	}
+}
+
+void truePrint(unsigned int* a, int N)
+{
+	int temp;
+	printf("Da sap xep xong! Ban co muon in mang ra?\n");
+	printf("0.Khong - 1.Co\n");
+	while (1)
+
+	{
+		temp = toupper(_getch());
+		if (temp == '1')
+		{
+			system("cls");
+			printArray(a, N);
+			break;
+		}
+		else if (temp == '0')
+		{
+			system("cls");
+			break;
+		}
+	}
+}
+
+void main()
+{
+	srand(time(NULL));
+	unsigned int* a;
+	int N;
+	unsigned long long giving = 0;
+	unsigned long long compare = 0;
+	chooseN(N);
+	RandomArray(a, N);
+	clock_t begin, end;
+	chooseSort(a, N, giving, compare, begin, end);
+	truePrint(a, N);
+	float sec = (float)(end - begin) / CLOCKS_PER_SEC;
+	printf("Time run: %0.14f sec\n", sec);
+	printf("So phep gan: %ul\n", giving);
+	printf("So phep so sanh: %ul\n", compare);
+	free(a);
 }
